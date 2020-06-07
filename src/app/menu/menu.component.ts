@@ -1,4 +1,14 @@
-import { Component, OnInit, HostBinding } from '@angular/core'
+import {
+    Component,
+    OnInit,
+    HostBinding,
+    ViewContainerRef,
+    ViewChild,
+    TemplateRef,
+    ViewChildren,
+    QueryList,
+    ContentChildren,
+} from '@angular/core';
 
 @Component({
     selector: 'app-menu',
@@ -6,21 +16,17 @@ import { Component, OnInit, HostBinding } from '@angular/core'
     styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnInit {
-    @HostBinding('style.display') public display = 'none'
+    @ViewChild('tpl', { read: TemplateRef }) tpl: TemplateRef<any>;
 
-    constructor() {}
+    constructor(private viewContainerRef: ViewContainerRef) {}
 
     ngOnInit(): void {}
 
-    public show(): void {
-        this.display = 'block'
-    }
-
-    public hide(): void {
-        this.display = 'none'
-    }
-
-    public isVisible(): boolean {
-        return this.display === 'block'
+    public createEmbedeedView(): void {
+        if (this.viewContainerRef.length === 0) {
+            this.viewContainerRef.createEmbeddedView(this.tpl);
+        } else {
+            this.viewContainerRef.clear();
+        }
     }
 }

@@ -1,7 +1,7 @@
-import { storiesOf } from '@storybook/angular'
-import { Component } from '@angular/core'
-import { MenuComponent } from './menu.component'
-import { MenuForDirective } from './menu-for.directive'
+import { storiesOf } from '@storybook/angular';
+import { Component } from '@angular/core';
+import { MenuComponent } from './menu.component';
+import { MenuForDirective } from './menu-for.directive';
 
 @Component({
     template: `
@@ -23,9 +23,9 @@ class HostComponent {}
 
 const moduleMetadata = {
     declarations: [MenuComponent, MenuForDirective],
-}
+};
 
 storiesOf('Menu', module).add('Hello World', () => ({
     moduleMetadata,
     component: HostComponent,
-}))
+}));

@@ -7,9 +7,9 @@ import { MenuComponent } from './menu/menu.component';
 import { MenuForDirective } from './menu/menu-for.directive';
 
 @NgModule({
-  declarations: [AppComponent, MenuComponent, MenuForDirective],
-  imports: [BrowserModule, AppRoutingModule],
-  providers: [],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent, MenuComponent, MenuForDirective],
+    imports: [BrowserModule, AppRoutingModule],
+    providers: [],
+    bootstrap: [AppComponent],
 })
 export class AppModule {}
