@@ -11,8 +11,7 @@ import { isNullOrUndefined } from 'util';
 export class MenuItemComponent implements OnInit {
     @Input() public appMenuFor: TemplateRef<MenuComponent>;
 
-    @ViewChild('viewContainerRef', { read: ViewContainerRef })
-    public viewContainerRef: ViewContainerRef;
+    @ViewChild('viewContainerRef', { read: ViewContainerRef }) public viewContainerRef: ViewContainerRef;
 
     constructor(@Optional() private parent: MenuComponent, private menuStateService: MenuStateService) {}
 
