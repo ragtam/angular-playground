@@ -5,9 +5,7 @@ import { MenuItemComponent } from './menu-item/menu-item.component';
 
 @Component({
     template: `
-        <app-menu-item [isRoot]="true" [appMenuFor]="mainMenu"
-            >Click Me</app-menu-item
-        >
+        <app-menu-item [appMenuFor]="mainMenu">Click Me</app-menu-item>
 
         <ng-template #mainMenu>
             <app-menu>
