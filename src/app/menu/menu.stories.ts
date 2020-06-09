@@ -1,28 +1,36 @@
 import { storiesOf } from '@storybook/angular';
 import { Component } from '@angular/core';
-import { MenuComponent } from './menu.component';
-import { MenuForDirective } from './menu-for.directive';
+import { MenuComponent } from './menu/menu.component';
+import { MenuItemComponent } from './menu-item/menu-item.component';
 
 @Component({
     template: `
-        <button [appMenuFor]="mainMenu">Click Me</button>
+        <app-menu-item [isRoot]="true" [appMenuFor]="mainMenu"
+            >Click Me</app-menu-item
+        >
 
-        <app-menu #mainMenu>
-            <button [appMenuFor]="vehiclesSubMenu">Vehicles</button>
-            <button>Cutlery</button>
-        </app-menu>
+        <ng-template #mainMenu>
+            <app-menu>
+                <app-menu-item [appMenuFor]="vehiclesSubMenu"
+                    >Vehicles</app-menu-item
+                >
+                <app-menu-item>Cutlery</app-menu-item>
+            </app-menu>
+        </ng-template>
 
-        <app-menu #vehiclesSubMenu>
-            <button>Cars</button>
-            <button>Buses</button>
-            <button>Trucks</button>
-        </app-menu>
+        <ng-template #vehiclesSubMenu>
+            <app-menu>
+                <app-menu-item>Cars</app-menu-item>
+                <app-menu-item>Buses</app-menu-item>
+                <app-menu-item>Trucks</app-menu-item>
+            </app-menu>
+        </ng-template>
     `,
 })
 class HostComponent {}
 
 const moduleMetadata = {
-    declarations: [MenuComponent, MenuForDirective],
+    declarations: [MenuComponent, MenuItemComponent],
 };
 
 storiesOf('Menu', module).add('Hello World', () => ({
