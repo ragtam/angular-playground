@@ -1,7 +1,6 @@
 import { storiesOf } from '@storybook/angular';
 import { Component } from '@angular/core';
-import { MenuComponent } from './menu/menu.component';
-import { MenuItemComponent } from './menu-item/menu-item.component';
+import { MenuModule } from './menu.module';
 
 @Component({
     template: `
@@ -9,9 +8,7 @@ import { MenuItemComponent } from './menu-item/menu-item.component';
 
         <ng-template #mainMenu>
             <app-menu>
-                <app-menu-item [appMenuFor]="vehiclesSubMenu"
-                    >Vehicles</app-menu-item
-                >
+                <app-menu-item [appMenuFor]="vehiclesSubMenu">Vehicles</app-menu-item>
                 <app-menu-item>Cutlery</app-menu-item>
             </app-menu>
         </ng-template>
@@ -28,10 +25,10 @@ import { MenuItemComponent } from './menu-item/menu-item.component';
 class HostComponent {}
 
 const moduleMetadata = {
-    declarations: [MenuComponent, MenuItemComponent],
+    imports: [MenuModule],
 };
 
-storiesOf('Menu', module).add('Hello World', () => ({
+storiesOf('Menu', module).add('Should Work', () => ({
     moduleMetadata,
     component: HostComponent,
 }));

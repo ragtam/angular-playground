@@ -1,0 +1,10 @@
+.button__container--parent {
+    display: block;
+}
+
+.button__container--child {
+    width: 110px;
+    margin-left: 1px;
+    display: inline-block;
+    border: 1px solid grey;
+}
