@@ -40,10 +40,24 @@ export class MenuItemComponent implements OnInit, OnDestroy {
         if (this.isLeaf()) {
             this.broadcastMenuClear();
         } else if (this.containerIsEmpty()) {
+            this.closeAlreadyOpenedMenu();
+            this.registerOpenedMenu();
             this.addTemplateToContainer(this.appMenuFor);
         } else {
             this.removeClickOutsideListener();
             this.clearContainer();
+        }
+    }
+
+    private registerOpenedMenu(): void {
+        if (this.parent) {
+            this.parent.registerOpenedMenu(this);
+        }
+    }
+
+    private closeAlreadyOpenedMenu(): void {
+        if (this.parent) {
+            this.parent.closeOpenedMenuIfExists();
         }
     }
 
@@ -95,7 +109,7 @@ export class MenuItemComponent implements OnInit, OnDestroy {
         this.viewContainerRef.createEmbeddedView(template);
     }
 
-    private clearContainer(): void {
+    public clearContainer(): void {
         this.viewContainerRef.clear();
     }
 }

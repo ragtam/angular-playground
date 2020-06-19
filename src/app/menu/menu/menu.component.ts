@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef, ContentChild, ElementRef } from '@angular/core';
+import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
     selector: 'app-menu',
@@ -6,5 +7,17 @@ import { Component } from '@angular/core';
     styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent {
+    private menuItem: MenuItemComponent;
+
     constructor() {}
+
+    public registerOpenedMenu(menuItem: MenuItemComponent): void {
+        this.menuItem = menuItem;
+    }
+
+    public closeOpenedMenuIfExists(): void {
+        if (this.menuItem) {
+            this.menuItem.clearContainer();
+        }
+    }
 }
