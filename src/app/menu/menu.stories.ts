@@ -23,10 +23,18 @@ import { MenuModule } from './menu.module';
 
         <ng-template #bikes>
             <app-menu>
-                <app-menu-item>Road</app-menu-item>
+                <app-menu-item [appMenuFor]="roadBikes">Road</app-menu-item>
                 <app-menu-item>MTB</app-menu-item>
                 <app-menu-item>City</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #roadBikes>
+            <app-menu>
+                <app-menu-item>Race</app-menu-item>
                 <app-menu-item>Gravel</app-menu-item>
+                <app-menu-item>Aero</app-menu-item>
+                <app-menu-item>Time Trial</app-menu-item>
             </app-menu>
         </ng-template>
     `,
