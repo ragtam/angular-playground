@@ -14,6 +14,8 @@ export class MenuItemComponent implements OnInit, OnDestroy {
 
     @ViewChild('viewContainerRef', { read: ViewContainerRef }) public viewContainerRef: ViewContainerRef;
 
+    private boundClickOutsideHandler;
+
     public get containerCssClass(): string {
         return this.isRoot() ? 'button__container--parent' : 'button__container--child';
     }
@@ -27,6 +29,7 @@ export class MenuItemComponent implements OnInit, OnDestroy {
 
     public ngOnInit(): void {
         if (this.isRoot()) {
+            this.assingClickOutsideHandler();
             this.subscribeToClearMenuMessages();
             this.addClickOutsideListener();
         }
@@ -40,7 +43,11 @@ export class MenuItemComponent implements OnInit, OnDestroy {
         if (this.isLeaf()) {
             this.broadcastMenuClear();
         } else if (this.containerIsEmpty()) {
-            this.closeAlreadyOpenedMenu();
+            if (this.isRoot()) {
+                this.broadcastMenuClear();
+                this.assingClickOutsideHandler();
+            }
+            this.closeAlreadyOpenedMenuInTheSameSubtree();
             this.registerOpenedMenu();
             this.addTemplateToContainer(this.appMenuFor);
         } else {
@@ -49,13 +56,17 @@ export class MenuItemComponent implements OnInit, OnDestroy {
         }
     }
 
+    private assingClickOutsideHandler() {
+        this.boundClickOutsideHandler = this.closeMenuOnOutsideClick.bind(this);
+    }
+
     private registerOpenedMenu(): void {
         if (this.parent) {
             this.parent.registerOpenedMenu(this);
         }
     }
 
-    private closeAlreadyOpenedMenu(): void {
+    private closeAlreadyOpenedMenuInTheSameSubtree(): void {
         if (this.parent) {
             this.parent.closeOpenedMenuIfExists();
         }
@@ -72,18 +83,16 @@ export class MenuItemComponent implements OnInit, OnDestroy {
     }
 
     private addClickOutsideListener(): void {
-        this.windowRef.addEventListener('click', this.closeMenuOnOutsideClick.bind(this));
+        this.windowRef.addEventListener('click', this.boundClickOutsideHandler);
     }
 
     private removeClickOutsideListener(): void {
-        this.windowRef.removeEventListener('click', this.closeMenuOnOutsideClick.bind(this));
+        this.windowRef.removeEventListener('click', this.boundClickOutsideHandler);
     }
 
     private closeMenuOnOutsideClick(e: any): void {
-        const menuItemsCollection = this.documentRef.getElementsByTagName('app-menu-item');
-        if (!menuItemsCollection || menuItemsCollection.length === 0) {
-            return;
-        } else if (!menuItemsCollection[0].contains(e.target)) {
+        const appMenuItem = this.documentRef.querySelector('app-menu-item > app-menu');
+        if (appMenuItem && !appMenuItem.parentElement.contains(e.target)) {
             this.removeClickOutsideListener();
             this.broadcastMenuClear();
         }

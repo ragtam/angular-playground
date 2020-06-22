@@ -7,3 +7,8 @@ https://medium.com/better-programming/understanding-contentchildren-with-an-exam
 https://itnext.io/working-with-angular-5-template-reference-variable-e5aa59fb9af
 
 https://medium.com/swlh/anatomy-of-angular-attribute-directive-selector-a1d83a73242
+
+Building a menu: Angular Material API style
+
+In this article we will learn how to build reusable menu with API inspired by the one from Angular Material.
+We are going to concentrate on its logig, without diving too deep into its styling.
