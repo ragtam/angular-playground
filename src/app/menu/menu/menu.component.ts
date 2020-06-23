@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewContainerRef, ContentChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef, ContentChild, ElementRef, HostBinding } from '@angular/core';
 import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({
@@ -7,6 +7,9 @@ import { MenuItemComponent } from '../menu-item/menu-item.component';
     styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent {
+    @HostBinding('style.display') public display = 'inline-block';
+    @HostBinding('style.position') public position = 'absolute';
+
     private menuItem: MenuItemComponent;
 
     constructor() {}
