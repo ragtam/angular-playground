@@ -10,7 +10,7 @@ import { WINDOW_REF, DOCUMENT_REF } from '../injection-tokens';
     styleUrls: ['./menu-item.component.scss'],
 })
 export class MenuItemComponent implements OnDestroy {
-    @Input() public appMenuFor: TemplateRef<MenuComponent>;
+    @Input() public menuFor: TemplateRef<MenuComponent>;
 
     @ViewChild('viewContainerRef', { read: ViewContainerRef }) public viewContainerRef: ViewContainerRef;
 
@@ -38,7 +38,7 @@ export class MenuItemComponent implements OnDestroy {
             this.addHandlersForRootElement();
             this.closeAlreadyOpenedMenuInTheSameSubtree();
             this.registerOpenedMenu();
-            this.addTemplateToContainer(this.appMenuFor);
+            this.addTemplateToContainer(this.menuFor);
         } else {
             this.removeClickOutsideListener();
             this.clearContainer();
@@ -101,7 +101,7 @@ export class MenuItemComponent implements OnDestroy {
     }
 
     private hasNestedSubMenu(): boolean {
-        return !!this.appMenuFor;
+        return !!this.menuFor;
     }
 
     private broadcastMenuClear(): void {

@@ -4,12 +4,12 @@ import { MenuModule } from './menu.module';
 
 @Component({
     template: `
-        <app-menu-item [appMenuFor]="main">Click Me</app-menu-item>
+        <app-menu-item [menuFor]="main">Click Me</app-menu-item>
 
         <ng-template #main>
             <app-menu>
-                <app-menu-item [appMenuFor]="vehicles">Vehicles</app-menu-item>
-                <app-menu-item [appMenuFor]="bikes">Bikes</app-menu-item>
+                <app-menu-item [menuFor]="vehicles">Vehicles</app-menu-item>
+                <app-menu-item [menuFor]="bikes">Bikes</app-menu-item>
             </app-menu>
         </ng-template>
 
@@ -23,7 +23,7 @@ import { MenuModule } from './menu.module';
 
         <ng-template #bikes>
             <app-menu>
-                <app-menu-item [appMenuFor]="roadBikes">Road</app-menu-item>
+                <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
                 <app-menu-item>MTB</app-menu-item>
                 <app-menu-item>City</app-menu-item>
             </app-menu>
