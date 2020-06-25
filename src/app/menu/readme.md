@@ -99,7 +99,7 @@ menu.component.html
 
 menu.component.css
 
-Having done that, lets concentrate on MenuItemComponent. This component needs to display content of our sub-menu item and, if necessary, trigger display of a nested menu related to it on click. So we are going to project the content using <ng-content> tag again. Also we need to somehow tell our component to display nested submenu related to our menu item. We can do so using <ng-container> tag. This tag is going to act as a placeholder to the template we are going to inject into our MenuItemComponent.
+Having done that, let's concentrate on MenuItemComponent. This component needs to display content of our sub-menu item and, if necessary, trigger display of a nested menu related to it on click. So we are going to project the content using <ng-content> tag again. Also we need to somehow tell our component to display nested submenu related to our menu item. We can do so using <ng-container> tag. This tag is going to act as a placeholder to the template we are going to inject into our MenuItemComponent.
 
 ```
 <button (click)="onClick()">
@@ -111,7 +111,7 @@ Having done that, lets concentrate on MenuItemComponent. This component needs to
 
 menu-item.component.html
 
-We add a template variable 'viewContainerRef' so that we could have a reference in our component class and we also have to define input property for the MenuItemComponent to bind parent item with sub-menu it should trigger. Lets also add a handler for the button click. It will render a template passed into the input property 'menuFor';
+We add a template variable 'viewContainerRef' so that we could have a reference in our component class and we also have to define input property for the MenuItemComponent to bind parent item with sub-menu it should trigger. Now lets add a handler for the button click. It will render a template passed into the input property 'menuFor';
 
 ```
 export class MenuItemComponent implements OnDestroy {
@@ -131,3 +131,57 @@ export class MenuItemComponent implements OnDestroy {
 ```
 
 menu-item.component.ts
+
+ViewContainerRef represents a container to which we can attatch a view. In our case we are going to attach the view that was passed into our menuFor input property. To do so, we use createEmbedeedView method, which does the actual insertion of a view into our container.
+
+At that moment we should be able to see nested menu after clicking on a parent element. So lets add MenuModule to imports array in AppModule, and also add menu html with some sub items inside to AppComponent.
+
+```
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule, MenuModule],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+app.module.ts
+
+```
+        <app-menu-item [menuFor]="main">Click Me</app-menu-item>
+
+        <ng-template #main>
+            <app-menu>
+                <app-menu-item [menuFor]="vehicles">Vehicles</app-menu-item>
+                <app-menu-item [menuFor]="bikes">Bikes</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #vehicles>
+            <app-menu>
+                <app-menu-item>Cars</app-menu-item>
+                <app-menu-item>Buses</app-menu-item>
+                <app-menu-item>Trucks</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #bikes>
+            <app-menu>
+                <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
+                <app-menu-item>MTB</app-menu-item>
+                <app-menu-item>City</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #roadBikes>
+            <app-menu>
+                <app-menu-item>Race</app-menu-item>
+                <app-menu-item>Gravel</app-menu-item>
+                <app-menu-item>Aero</app-menu-item>
+                <app-menu-item>Time Trial</app-menu-item>
+            </app-menu>
+        </ng-template>
+```
+
+app.component.html
