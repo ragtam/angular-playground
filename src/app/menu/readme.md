@@ -207,7 +207,7 @@ app.module.ts
 
 app.component.html
 
-If you run our app and checked how it works, you definitely have spotted some problems.
+If you run our app and checked how it works, you definitely have spotted some problems (not full list yet).
 
 1. the first menu container should be displayed below 'Click Me' button,
 2. its impossible to close menu on clicking menu item button,
@@ -232,6 +232,8 @@ Lets tackle the first problem. Menu Item element needs to know if its the very r
 
 ```
 
+menu-item.component.css
+
 Once we have them we need to add a getter function, which is going to return either of them depending if its a root or not:
 
 ```
@@ -246,6 +248,8 @@ Once we have them we need to add a getter function, which is going to return eit
     }
 ```
 
+menu-item.component.ts
+
 and one last thing is to alter menu item html a bit, so that it accepted dynamically assigned css class. After a change it should look like this:
 
 ```
@@ -255,3 +259,86 @@ and one last thing is to alter menu item html a bit, so that it accepted dynamic
 
 <ng-container #viewContainerRef></ng-container>
 ```
+
+menu-item.component.html
+
+Problem number one, checked. Now lets concentrate on another one. We click 'Click Me' button, menu is displayed, clicking on it again should close it. But it does not. To solve that let's check if the placeholder for our container is already taken up by another menu. If so it means we need to clear the container. Let's alter the 'onClick' handler and add two private methods.
+
+```
+    public onClick(): void {
+        if (this.containerIsEmpty()) {
+            this.addTemplateToContainer(this.menuFor);
+        } else {
+            this.clearContainer();
+        }
+    }
+
+    private containerIsEmpty(): boolean {
+        return this.viewContainerRef.length === 0;
+    }
+
+    private clearContainer(): void {
+        this.viewContainerRef.clear();
+    }
+
+```
+
+menu-item.component.ts
+
+If we click 'Click Me' button the menu shows up, click again and it disapears. Seems to have helped. But still we need to close sub tree if we click on a leaf that is adjascent to its parent. To do so we need to alter MenuComponent, so that it knew which menu item triggered sub menu open. And also to make it capable of telling the menu item to clear its content (close sub menu that it opened). Let's add those two methods then. After the change our MenuComponent should look like this:
+
+```
+export class MenuComponent {
+    @HostBinding('style.display') public display = 'inline-block';
+    @HostBinding('style.position') public position = 'absolute';
+
+    private activeMenuItem: MenuItemComponent;
+
+    constructor() {}
+
+    public registerOpenedMenu(menuItem: MenuItemComponent): void {
+        this.activeMenuItem = menuItem;
+    }
+
+    public closeOpenedMenuIfExists(): void {
+        if (this.activeMenuItem) {
+            this.activeMenuItem.clearContainer();
+        }
+    }
+}
+```
+
+menu.component.ts
+
+Now lets go to MenuItemComponent. We need to change the accessor of clearContainer method to be public, and handle registration of opened sub menu in our parent component. Now in 'onClick' we first close already opened menu (if exists), then register menu item that triggered another menu to open. Altered click handler, clickContainer and new private methods added should look like this.
+
+```
+    public onClick(): void {
+        if (this.containerIsEmpty()) {
+            this.closeAlreadyOpenedMenuInTheSameSubtree();
+            this.registerOpenedMenu();
+            this.addTemplateToContainer(this.menuFor);
+        } else {
+            this.clearContainer();
+        }
+    }
+
+    public clearContainer(): void {
+        this.viewContainerRef.clear();
+    }
+
+    private closeAlreadyOpenedMenuInTheSameSubtree(): void {
+        if (this.parent) {
+            this.parent.closeOpenedMenuIfExists();
+        }
+    }
+
+    private registerOpenedMenu(): void {
+        if (this.parent) {
+            this.parent.registerOpenedMenu(this);
+        }
+    }
+
+```
+
+Ok, seems we are done with that. Now we need to close our menu if we click outside of it (problem number three). To do so we are going to use window and document objects. We will use window to add/remove click handlers

@@ -10,17 +10,17 @@ export class MenuComponent {
     @HostBinding('style.display') public display = 'inline-block';
     @HostBinding('style.position') public position = 'absolute';
 
-    private menuItem: MenuItemComponent;
+    private activeMenuItem: MenuItemComponent;
 
     constructor() {}
 
     public registerOpenedMenu(menuItem: MenuItemComponent): void {
-        this.menuItem = menuItem;
+        this.activeMenuItem = menuItem;
     }
 
     public closeOpenedMenuIfExists(): void {
-        if (this.menuItem) {
-            this.menuItem.clearContainer();
+        if (this.activeMenuItem) {
+            this.activeMenuItem.clearContainer();
         }
     }
 }
