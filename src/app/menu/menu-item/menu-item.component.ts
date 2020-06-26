@@ -45,6 +45,10 @@ export class MenuItemComponent implements OnDestroy {
         }
     }
 
+    public clearContainer(): void {
+        this.viewContainerRef.clear();
+    }
+
     private assingClickOutsideHandler(): void {
         this.boundClickOutsideHandler = this.closeMenuOnOutsideClick.bind(this);
     }
@@ -114,9 +118,5 @@ export class MenuItemComponent implements OnDestroy {
 
     private addTemplateToContainer(template: TemplateRef<any>): void {
         this.viewContainerRef.createEmbeddedView(template);
-    }
-
-    public clearContainer(): void {
-        this.viewContainerRef.clear();
     }
 }

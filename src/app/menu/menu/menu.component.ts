@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewContainerRef, ContentChild, ElementRef, HostBinding } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { MenuItemComponent } from '../menu-item/menu-item.component';
 
 @Component({

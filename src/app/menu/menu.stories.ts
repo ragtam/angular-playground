@@ -37,6 +37,42 @@ import { MenuModule } from './menu.module';
                 <app-menu-item>Time Trial</app-menu-item>
             </app-menu>
         </ng-template>
+
+        <h1>hello world</h1>
+
+        <app-menu-item [menuFor]="main0">Click Me</app-menu-item>
+
+        <ng-template #main0>
+            <app-menu>
+                <app-menu-item [menuFor]="vehicles0">Vehicles 0</app-menu-item>
+                <app-menu-item [menuFor]="bikes0">Bikes 0</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #vehicles0>
+            <app-menu>
+                <app-menu-item>Cars 0</app-menu-item>
+                <app-menu-item>Buses 0</app-menu-item>
+                <app-menu-item>Trucks 0</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #bikes0>
+            <app-menu>
+                <app-menu-item [menuFor]="roadBikes0">Road 0</app-menu-item>
+                <app-menu-item>MTB 0</app-menu-item>
+                <app-menu-item>City 0</app-menu-item>
+            </app-menu>
+        </ng-template>
+
+        <ng-template #roadBikes0>
+            <app-menu>
+                <app-menu-item>Race 0</app-menu-item>
+                <app-menu-item>Gravel 0</app-menu-item>
+                <app-menu-item>Aero 0</app-menu-item>
+                <app-menu-item>Time Trial 0</app-menu-item>
+            </app-menu>
+        </ng-template>
     `,
 })
 class HostComponent {}

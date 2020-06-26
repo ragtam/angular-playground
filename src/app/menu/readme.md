@@ -67,6 +67,19 @@ ng generate component menu/menu-item
 
 ```
 
+We need to make sure that both components are declared and exported in MenuModule.ts. It should look this way:
+
+```
+@NgModule({
+  declarations: [MenuComponent, MenuItemComponent],
+  exports: [MenuComponent, MenuItemComponent],
+  imports: [CommonModule],
+})
+export class MenuModule {}
+```
+
+menu.module.ts
+
 Our MenuComponent needs to be positioned absolutely (so that it did not break our document flow) and its display has to be set to inline-block (so that nested tree was displayed next to its parent).
 
 ```
@@ -102,7 +115,7 @@ menu.component.css
 Having done that, let's concentrate on MenuItemComponent. This component needs to display content of our sub-menu item and, if necessary, trigger display of a nested menu related to it on click. So we are going to project the content using <ng-content> tag again. Also we need to somehow tell our component to display nested submenu related to our menu item. We can do so using <ng-container> tag. This tag is going to act as a placeholder to the template we are going to inject into our MenuItemComponent.
 
 ```
-<button (click)="onClick()">
+<button (click)="onClick()" class="button__container">
     <ng-content></ng-content>
 </button>
 
@@ -111,7 +124,15 @@ Having done that, let's concentrate on MenuItemComponent. This component needs t
 
 menu-item.component.html
 
-We add a template variable 'viewContainerRef' so that we could have a reference in our component class and we also have to define input property for the MenuItemComponent to bind parent item with sub-menu it should trigger. Now lets add a handler for the button click. It will render a template passed into the input property 'menuFor';
+```
+.button__container {
+  min-width: 110px;
+}
+```
+
+menu-item.component.css
+
+We add a template variable 'viewContainerRef' so that we could have a reference in our component class and we also have to define input property for the MenuItemComponent to bind parent item with sub-menu it should trigger. We also add a css style, so that all button elements had the same width. Now lets add a handler for the button click. It will render a template passed into the input property 'menuFor'.
 
 ```
 export class MenuItemComponent implements OnDestroy {
@@ -185,3 +206,52 @@ app.module.ts
 ```
 
 app.component.html
+
+If you run our app and checked how it works, you definitely have spotted some problems.
+
+1. the first menu container should be displayed below 'Click Me' button,
+2. its impossible to close menu on clicking menu item button,
+3. clicking outside the menu should close it too, but it is not, yet.
+
+Lets tackle the first problem. Menu Item element needs to know if its the very root of the menu tree, or if its a leaf. Depending on its position in the tree we are going to apply different CSS style to it. To find it out we need to inject optional dependency to our MenuItemComponent, which is going to be a parent component. If there is no parent component of type MenuComponent, it means the MenuItem is the root, otherwise its the leaf. Lest add two css classes for the parent and the child:
+
+```
+.button__container {
+    min-width: 110px;
+}
+
+.button__container--root {
+    display: block;
+}
+
+.button__container--leaf {
+    margin-left: 1px;
+    display: inline-block;
+    border: 1px solid grey;
+}
+
+```
+
+Once we have them we need to add a getter function, which is going to return either of them depending if its a root or not:
+
+```
+    public get containerCssClass(): string {
+        return this.isRoot() ? 'button__container--root' : 'button__container--leaf';
+    }
+
+    constructor( @Optional() private parent: MenuComponent ) {}
+
+    private isRoot(): boolean {
+        return isNullOrUndefined(this.parent);
+    }
+```
+
+and one last thing is to alter menu item html a bit, so that it accepted dynamically assigned css class. After a change it should look like this:
+
+```
+<button (click)="onClick()" [ngClass]="containerCssClass" class="button__container">
+    <ng-content></ng-content>
+</button>
+
+<ng-container #viewContainerRef></ng-container>
+```
