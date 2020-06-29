@@ -341,4 +341,96 @@ Now lets go to MenuItemComponent. We need to change the accessor of clearContain
 
 ```
 
-Ok, seems we are done with that. Now we need to close our menu if we click outside of it (problem number three). To do so we are going to use window and document objects. We will use window to add/remove click handlers
+Ok, seems we are done with that. Now we need to close our menu if we click outside of it (problem number three). To detect if click happened outside we are going to use window and document objects. We will use window`s add/remove click handlers and document to query menu item. We don't want to use global objects as they are inconvenient to mock in testing, this is why we are going to create injection tokens for them. Lets create a file name injection-tokens.ts in the root of our menu ( next to menu.module.ts).
+
+```
+import { InjectionToken } from '@angular/core';
+
+export const WINDOW_REF = new InjectionToken<Window>('windowRef');
+
+export const DOCUMENT_REF = new InjectionToken<Document>('documentRef');
+```
+
+injection-tokens.ts
+
+Once we have them, lets provide them in MenuModule, at this point the file should look like this:
+
+```
+@NgModule({
+    declarations: [MenuComponent, MenuItemComponent],
+    providers: [
+        {
+            provide: WINDOW_REF,
+            useValue: window
+        },
+        {
+            provide: DOCUMENT_REF,
+            useValue: document
+        }
+    ],
+    imports: [CommonModule],
+    exports: [MenuComponent, MenuItemComponent],
+})
+export class MenuModule {}
+```
+
+menu.module.ts
+
+Now lets make use of our tokens and inject them in MenuItemComponent. Its constructor should be extended with two items, windowRef and documentRef. With the use of those object we are going to detect if click happened outside of the menu. We will attatch click lisneter to the root element of our menu (as all sub menus are added as its children). Once this is done, we will remove the listener. Lets add then another method
+
+```
+    private boundClickOutsideHandler: (event: any) => void;
+
+    constructor(
+        @Optional() private parent: MenuComponent,
+        @Inject(WINDOW_REF) private windowRef: Window,
+        @Inject(DOCUMENT_REF) private documentRef: Document
+    ) {}
+
+    ...
+
+    public onClick(): void {
+        if (this.containerIsEmpty()) {
+            // we add a handler for the root element
+            this.addHandlerForRootElement();
+
+            this.closeAlreadyOpenedMenuInTheSameSubtree();
+            this.registerOpenedMenu();
+            this.addTemplateToContainer(this.menuFor);
+        } else {
+            // and remove it in case we want to close the menu
+            this.removeClickOutsideListener();
+
+            this.clearContainer();
+        }
+    }
+
+    ...
+
+    private addHandlerForRootElement() {
+        if (this.isRoot()) {
+            this.assingClickOutsideHandler();
+            this.addClickOutsideListener();
+        }
+    }
+
+    private assingClickOutsideHandler(): void {
+        this.boundClickOutsideHandler = this.closeMenuOnOutsideClick.bind(this);
+    }
+
+    private addClickOutsideListener(): void {
+        this.windowRef.addEventListener('click', this.boundClickOutsideHandler);
+    }
+
+    private removeClickOutsideListener(): void {
+        this.windowRef.removeEventListener('click', this.boundClickOutsideHandler);
+    }
+
+    private closeMenuOnOutsideClick({ target }): void {
+        // currently just a placeholder
+        console.log('hello world');
+    }
+
+```
+
+If we click on the menu that is currently closed, before showing it we check if it was the root element, and if so we add click event listener. If on the other hand menu is already visible and we click it again, we need to remove click listener and only then proceed with clearing the container. You probably have noticed new private property boundClickOutsideHandler and that its passed in as a second argument of addEventListener (not just closeMenuOnOustideClick). This is done, because removeEventListener checks by reference the function that it needs to remove. doing 'closeMenuOnOustideClick.bind(this)' returns a new reference, and so does arrow function.
