@@ -1,14 +1,4 @@
-https://www.freecodecamp.org/news/everything-you-need-to-know-about-ng-template-ng-content-ng-container-and-ngtemplateoutlet-4b7b51223691/
-
-https://medium.com/@pietmichal/angulars-content-projection-trap-and-why-you-should-consider-using-template-outlet-instead-cc3c4cad87c9
-
-https://medium.com/better-programming/understanding-contentchildren-with-an-example-e76ce78968db
-
-https://itnext.io/working-with-angular-5-template-reference-variable-e5aa59fb9af
-
-https://medium.com/swlh/anatomy-of-angular-attribute-directive-selector-a1d83a73242
-
-Building a menu: Angular Material API style
+# Building a context menu: Angular Material API style
 
 In this article we will learn how to build a generic menu with Angular Material like API style.
 We are going to concentrate on its logic, without paying too much attention to the way its presented on the screen.
@@ -18,38 +8,31 @@ Our goal is to create a menu, items of which could be defined in a way shown bel
 ```
 <app-menu-item [menuFor]="main">Click Me</app-menu-item>
 
-        <ng-template #main>
-            <app-menu>
-                <app-menu-item [menuFor]="vehicles">Vehicles</app-menu-item>
-                <app-menu-item [menuFor]="bikes">Bikes</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #main>
+    <app-menu>
+        <app-menu-item [menuFor]="vehicles">Vehicles</app-menu-item>
+        <app-menu-item [menuFor]="bikes">Bikes</app-menu-item>
+    </app-menu>
+</ng-template>
 
-        <ng-template #vehicles>
-            <app-menu>
-                <app-menu-item>Cars</app-menu-item>
-                <app-menu-item>Buses</app-menu-item>
-                <app-menu-item>Trucks</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #vehicles>
+    <app-menu>
+        <app-menu-item>Cars</app-menu-item>
+        <app-menu-item>Buses</app-menu-item>
+        <app-menu-item>Trucks</app-menu-item>
+    </app-menu>
+</ng-template>
 
-        <ng-template #bikes>
-            <app-menu>
-                <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
-                <app-menu-item>MTB</app-menu-item>
-                <app-menu-item>City</app-menu-item>
-            </app-menu>
-        </ng-template>
-
-        <ng-template #roadBikes>
-            <app-menu>
-                <app-menu-item>Race</app-menu-item>
-                <app-menu-item>Gravel</app-menu-item>
-                <app-menu-item>Aero</app-menu-item>
-                <app-menu-item>Time Trial</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #bikes>
+    <app-menu>
+        <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
+        <app-menu-item>MTB</app-menu-item>
+        <app-menu-item>City</app-menu-item>
+    </app-menu>
+</ng-template>
 ```
+
+## Setup
 
 First thing we are going to do is to set up Angular app and create a module that will later embrace all elements necessary for the menu to work.
 
@@ -79,6 +62,8 @@ export class MenuModule {}
 ```
 
 menu.module.ts
+
+## Styling the Menu (container for items)
 
 Our MenuComponent needs to be positioned absolutely (so that it did not break our document flow) and its display has to be set to inline-block (so that nested tree was displayed next to its parent).
 
@@ -111,6 +96,8 @@ menu.component.html
 ```
 
 menu.component.css
+
+## Building Menu Item component
 
 Having done that, let's concentrate on MenuItemComponent. This component needs to display content of our sub-menu item and, if necessary, trigger display of a nested menu related to it on click. So we are going to project the content using <ng-content> tag again. Also we need to somehow tell our component to display nested submenu related to our menu item. We can do so using <ng-container> tag. This tag is going to act as a placeholder to the template we are going to inject into our MenuItemComponent.
 
@@ -155,6 +142,8 @@ menu-item.component.ts
 
 ViewContainerRef represents a container to which we can attatch a view. In our case we are going to attach the view that was passed into our menuFor input property. To do so, we use createEmbedeedView method, which does the actual insertion of a view into our container.
 
+## See it Working
+
 At that moment we should be able to see nested menu after clicking on a parent element. So lets add MenuModule to imports array in AppModule, and also add menu html with some sub items inside to AppComponent.
 
 ```
@@ -170,39 +159,39 @@ export class AppModule {}
 app.module.ts
 
 ```
-        <app-menu-item [menuFor]="main">Click Me</app-menu-item>
+<app-menu-item [menuFor]="main">Click Me</app-menu-item>
 
-        <ng-template #main>
-            <app-menu>
-                <app-menu-item [menuFor]="vehicles">Vehicles</app-menu-item>
-                <app-menu-item [menuFor]="bikes">Bikes</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #main>
+    <app-menu>
+        <app-menu-item [menuFor]="vehicles">Vehicles</app-menu-item>
+        <app-menu-item [menuFor]="bikes">Bikes</app-menu-item>
+    </app-menu>
+</ng-template>
 
-        <ng-template #vehicles>
-            <app-menu>
-                <app-menu-item>Cars</app-menu-item>
-                <app-menu-item>Buses</app-menu-item>
-                <app-menu-item>Trucks</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #vehicles>
+    <app-menu>
+        <app-menu-item>Cars</app-menu-item>
+        <app-menu-item>Buses</app-menu-item>
+        <app-menu-item>Trucks</app-menu-item>
+    </app-menu>
+</ng-template>
 
-        <ng-template #bikes>
-            <app-menu>
-                <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
-                <app-menu-item>MTB</app-menu-item>
-                <app-menu-item>City</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #bikes>
+    <app-menu>
+        <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
+        <app-menu-item>MTB</app-menu-item>
+        <app-menu-item>City</app-menu-item>
+    </app-menu>
+</ng-template>
 
-        <ng-template #roadBikes>
-            <app-menu>
-                <app-menu-item>Race</app-menu-item>
-                <app-menu-item>Gravel</app-menu-item>
-                <app-menu-item>Aero</app-menu-item>
-                <app-menu-item>Time Trial</app-menu-item>
-            </app-menu>
-        </ng-template>
+<ng-template #roadBikes>
+    <app-menu>
+        <app-menu-item>Race</app-menu-item>
+        <app-menu-item>Gravel</app-menu-item>
+        <app-menu-item>Aero</app-menu-item>
+        <app-menu-item>Time Trial</app-menu-item>
+    </app-menu>
+</ng-template>
 ```
 
 app.component.html
@@ -212,6 +201,8 @@ If you run our app and checked how it works, you definitely have spotted some pr
 1. the first menu container should be displayed below 'Click Me' button,
 2. its impossible to close menu on clicking menu item button,
 3. clicking outside the menu should close it too, but it is not, yet.
+
+## Fix positioning of Menu Container
 
 Lets tackle the first problem. Menu Item element needs to know if its the very root of the menu tree, or if its a leaf. Depending on its position in the tree we are going to apply different CSS style to it. To find it out we need to inject optional dependency to our MenuItemComponent, which is going to be a parent component. If there is no parent component of type MenuComponent, it means the MenuItem is the root, otherwise its the leaf. Lest add two css classes for the parent and the child:
 
@@ -261,6 +252,8 @@ and one last thing is to alter menu item html a bit, so that it accepted dynamic
 ```
 
 menu-item.component.html
+
+## Opening and Closing on menu item click
 
 Problem number one, checked. Now lets concentrate on another one. We click 'Click Me' button, menu is displayed, clicking on it again should close it. But it does not. To solve that let's check if the placeholder for our container is already taken up by another menu. If so it means we need to clear the container. Let's alter the 'onClick' handler and add two private methods.
 
@@ -341,6 +334,8 @@ Now lets go to MenuItemComponent. We need to change the accessor of clearContain
 
 ```
 
+## Closing on the click outside
+
 Ok, seems we are done with that. Now we need to close our menu if we click outside of it (problem number three). To detect if click happened outside we are going to use window and document objects. We will use window`s add/remove click handlers and document to query menu item. We don't want to use global objects as they are inconvenient to mock in testing, this is why we are going to create injection tokens for them. Lets create a file name injection-tokens.ts in the root of our menu ( next to menu.module.ts).
 
 ```
@@ -392,7 +387,7 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
     public onClick(): void {
         if (this.containerIsEmpty()) {
             // we add a handler for the root element
-            this.addHandlerForRootElement();
+            this.addHandlersForRootElement();
 
             this.closeAlreadyOpenedMenuInTheSameSubtree();
             this.registerOpenedMenu();
@@ -407,7 +402,7 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
 
     ...
 
-    private addHandlerForRootElement() {
+    private addHandlersForRootElement() {
         if (this.isRoot()) {
             this.assingClickOutsideHandler();
             this.addClickOutsideListener();
@@ -433,4 +428,126 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
 
 ```
 
-If we click on the menu that is currently closed, before showing it we check if it was the root element, and if so we add click event listener. If on the other hand menu is already visible and we click it again, we need to remove click listener and only then proceed with clearing the container. You probably have noticed new private property boundClickOutsideHandler and that its passed in as a second argument of addEventListener (not just closeMenuOnOustideClick). This is done, because removeEventListener checks by reference the function that it needs to remove. doing 'closeMenuOnOustideClick.bind(this)' returns a new reference, and so does arrow function.
+If we click on the menu that is currently closed, before showing it we check if it was the root element, and if so we add click event listener. If on the other hand menu is already visible and we click it again, we need to remove click listener and only then proceed with clearing the container. You probably have noticed new private property boundClickOutsideHandler and that its passed in as a second argument of addEventListener (not just closeMenuOnOustideClick). This is done, because removeEventListener checks by reference the function that it needs to remove. doing 'closeMenuOnOustideClick.bind(this)' returns a new reference, and so does arrow function. This is why we need to assign function reference to a property.
+
+With handlers attatched we can work on closing the menu on outside click. We are going to use querySelector to get the root menu. If click target was ouside of it, we remove click handler and broadcast menu clear. BroadcastMenuClear is a method that we need to define.
+
+```
+    private closeMenuOnOutsideClick({ target }): void {
+        const appMenuItem = this.documentRef.querySelector('app-menu-item > app-menu');
+        if (appMenuItem && !appMenuItem.parentElement.contains(target)) {
+            this.removeClickOutsideListener();
+            this.broadcastMenuClear();
+        }
+    }
+
+    private broadcastMenuClear(): void {
+        // a placeholder
+    }
+```
+
+menu-item.component.ts
+
+Its going to call a service that is responsible for informing everyone who is interested that a menu should be closed. Lets create a service then. Type 'ng generate service menu/menuState' and hit enter. After that lets expose an observable and define a method that will make it fire next value.
+
+```
+@Injectable({
+    providedIn: 'root',
+})
+export class MenuStateService {
+    public state$: Observable<void>;
+
+    private _state = new Subject<any>();
+
+    constructor() {
+        this.state$ = this._state.asObservable();
+    }
+
+    public clearMenu(): void {
+        this._state.next();
+    }
+}
+```
+
+Once we have a service, we need to use it in MenuItemComponent. Lets go to broadcastMenuClear method, and call clear menu from menu state service. We are now dispatching next on the observable, but no one is listening to the messages. Lets add a method that will subscribe to the messages. We will call it
+
+```
+    constructor(
+        @Optional() private parent: MenuComponent,
+        @Inject(WINDOW_REF) private windowRef: Window,
+        @Inject(DOCUMENT_REF) private documentRef: Document,
+        private menuStateService: MenuStateService
+    ) {}
+
+    ...
+
+    // altered addHandlersForRootElement method
+    private addHandlersForRootElement() {
+        if (this.isRoot()) {
+            // we subscribe to menu state changes in here
+            this.subscribeToClearMenuMessages();
+            this.assingClickOutsideHandler();
+            this.addClickOutsideListener();
+        }
+    }
+
+    ...
+
+    private broadcastMenuClear(): void {
+        this.menuStateService.clearMenu();
+    }
+
+    ...
+
+    private subscribeToClearMenuMessages(): void {
+        this.menuStateService.state$.subscribe(() => {
+            this.clearContainer();
+        });
+    }
+```
+
+menu-item.component.ts
+
+Our menu is almost working, now we have to handle its leaves. If a leaf has been clicked, we need to close the menu. Lets change our click method.
+
+```
+   public onClick(): void {
+        if (this.isLeaf()) {
+            this.broadcastMenuClear();
+        } else if (this.containerIsEmpty()) {
+            this.addHandlersForRootElement();
+            this.closeAlreadyOpenedMenuInTheSameSubtree();
+            this.registerOpenedMenu();
+            this.addTemplateToContainer(this.menuFor);
+        } else {
+            this.removeClickOutsideListener();
+            this.clearContainer();
+        }
+    }
+
+    ...
+
+    private isLeaf(): boolean {
+        return !this.isRoot() && !this.hasNestedSubMenu();
+    }
+
+    private hasNestedSubMenu(): boolean {
+        return !!this.menuFor;
+    }
+```
+
+## Conclusion
+
+In this article we learned how buid a context menu with the API similar to the one Angular Material uses. We applied several techniques used during Angular application creation, like content projection, created views from templates dynamically, accessed parent of a child component and applied styles dynamically.
+
+## Resources
+
+https://www.freecodecamp.org/news/everything-you-need-to-know-about-ng-template-ng-content-ng-container-and-ngtemplateoutlet-4b7b51223691/
+
+https://medium.com/@pietmichal/angulars-content-projection-trap-and-why-you-should-consider-using-template-outlet-instead-cc3c4cad87c9
+
+https://medium.com/better-programming/understanding-contentchildren-with-an-example-e76ce78968db
+
+https://itnext.io/working-with-angular-5-template-reference-variable-e5aa59fb9af
+
+https://medium.com/swlh/anatomy-of-angular-attribute-directive-selector-a1d83a73242
