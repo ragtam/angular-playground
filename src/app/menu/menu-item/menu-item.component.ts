@@ -1,8 +1,9 @@
-import { Component, ViewChild, ViewContainerRef, Input, TemplateRef, Optional, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, ViewChild, ViewContainerRef, Input, TemplateRef, Optional, OnDestroy, Inject } from '@angular/core';
 import { MenuComponent } from '../menu/menu.component';
 import { MenuStateService } from '../menu-state.service';
 import { isNullOrUndefined } from 'util';
 import { WINDOW_REF, DOCUMENT_REF } from '../injection-tokens';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-menu-item',
@@ -19,6 +20,7 @@ export class MenuItemComponent implements OnDestroy {
     }
 
     private boundClickOutsideHandler: (event: any) => void;
+    private menuStateSubscription: Subscription;
 
     constructor(
         @Optional() private parent: MenuComponent,
@@ -28,7 +30,8 @@ export class MenuItemComponent implements OnDestroy {
     ) {}
 
     public ngOnDestroy(): void {
-        this.removeClickOutsideListener();
+        this.removeClickOutsideListener(this.boundClickOutsideHandler);
+        this.unsubscribe();
     }
 
     public onClick(): void {
@@ -40,7 +43,7 @@ export class MenuItemComponent implements OnDestroy {
             this.registerOpenedMenu();
             this.addTemplateToContainer(this.menuFor);
         } else {
-            this.removeClickOutsideListener();
+            this.removeClickOutsideListener(this.boundClickOutsideHandler);
             this.clearContainer();
         }
     }
@@ -64,7 +67,7 @@ export class MenuItemComponent implements OnDestroy {
             this.subscribeToClearMenuMessages();
             this.broadcastMenuClear();
             this.assingClickOutsideHandler();
-            this.addClickOutsideListener();
+            this.addClickOutsideListener(this.boundClickOutsideHandler);
         }
     }
 
@@ -79,23 +82,29 @@ export class MenuItemComponent implements OnDestroy {
     }
 
     private subscribeToClearMenuMessages(): void {
-        this.menuStateService.state$.subscribe(() => {
+        this.menuStateSubscription = this.menuStateService.state$.subscribe(() => {
             this.clearContainer();
         });
     }
 
-    private addClickOutsideListener(): void {
-        this.windowRef.addEventListener('click', this.boundClickOutsideHandler);
+    private unsubscribe(): void {
+        if (this.menuStateSubscription) {
+            this.menuStateSubscription.unsubscribe();
+        }
     }
 
-    private removeClickOutsideListener(): void {
-        this.windowRef.removeEventListener('click', this.boundClickOutsideHandler);
+    private addClickOutsideListener(functionRef: (event) => void): void {
+        this.windowRef.addEventListener('click', functionRef);
+    }
+
+    private removeClickOutsideListener(functionRef: (event) => void): void {
+        this.windowRef.removeEventListener('click', functionRef);
     }
 
     private closeMenuOnOutsideClick({ target }): void {
         const appMenuItem = this.documentRef.querySelector('app-menu-item > app-menu');
         if (appMenuItem && !appMenuItem.parentElement.contains(target)) {
-            this.removeClickOutsideListener();
+            this.removeClickOutsideListener(this.boundClickOutsideHandler);
             this.broadcastMenuClear();
         }
     }

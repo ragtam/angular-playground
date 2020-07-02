@@ -25,7 +25,7 @@ Our goal is to create a menu, items of which could be defined in a way shown bel
 
 <ng-template #bikes>
     <app-menu>
-        <app-menu-item [menuFor]="roadBikes">Road</app-menu-item>
+        <app-menu-item>Road</app-menu-item>
         <app-menu-item>MTB</app-menu-item>
         <app-menu-item>City</app-menu-item>
     </app-menu>
@@ -34,7 +34,7 @@ Our goal is to create a menu, items of which could be defined in a way shown bel
 
 ## Setup
 
-First thing we are going to do is to set up Angular app and create a module that will later embrace all elements necessary for the menu to work.
+First thing we are going to do is to set up an Angular app and create a module that will later embrace all elements necessary for the menu to work.
 
 ```
 ng new menu-demo-app
@@ -77,7 +77,7 @@ export class MenuComponent {
 
 menu.component.ts
 
-Now we have to project the content of our container, making sure that all its elements are displayed in a column, one after another. We do so using <ng-content> tag. Angular replaces this tag with the content that we place between our host component tags. If we put <app-menu>Hello World<app-menu>, it will simply display 'Hello World' in our host component.
+Now we have to project the content of our container. I can be done using <ng-content> tag. Angular replaces this tag with the content that we place between our host component tags. If we put <app-menu>Hello World<app-menu>, it will simply display 'Hello World' in our host component.
 
 ```
 <div class="menu">
@@ -86,6 +86,8 @@ Now we have to project the content of our container, making sure that all its el
 ```
 
 menu.component.html
+
+We wrap projected content around a div and add some styling to it so that all projected elements (menu items) were displayed in one column, one below another.
 
 ```
 .menu {
@@ -99,7 +101,7 @@ menu.component.css
 
 ## Building Menu Item component
 
-Having done that, let's concentrate on MenuItemComponent. This component needs to display content of our sub-menu item and, if necessary, trigger display of a nested menu related to it on click. So we are going to project the content using <ng-content> tag again. Also we need to somehow tell our component to display nested submenu related to our menu item. We can do so using <ng-container> tag. This tag is going to act as a placeholder to the template we are going to inject into our MenuItemComponent.
+Having done that, let's concentrate on MenuItemComponent. This component needs to display the content of our sub-menu item and, if necessary, trigger display of a nested menu related to it on click. We are going to project the content using <ng-content> tag again. Also we need to tell the component to display nested submenu that is related to the menu item. We can do so using <ng-container> tag. This tag is going to act as a placeholder to the template we are going to inject into our MenuItemComponent.
 
 ```
 <button (click)="onClick()" class="button__container">
@@ -119,10 +121,10 @@ menu-item.component.html
 
 menu-item.component.css
 
-We add a template variable 'viewContainerRef' so that we could have a reference in our component class and we also have to define input property for the MenuItemComponent to bind parent item with sub-menu it should trigger. We also add a css style, so that all button elements had the same width. Now lets add a handler for the button click. It will render a template passed into the input property 'menuFor'.
+We add a template variable 'viewContainerRef' so that we could have a reference in our component class. We have to define input property for the MenuItemComponent to bind parent item with sub-menu it should trigger. We will add a css style, so that all button elements had the same width. Now lets add a handler for the button click. It will render a template passed into the input property 'menuFor'.
 
 ```
-export class MenuItemComponent implements OnDestroy {
+export class MenuItemComponent {
     @Input() public menuFor: TemplateRef<MenuComponent>;
 
     @ViewChild('viewContainerRef', { read: ViewContainerRef }) public viewContainerRef: ViewContainerRef;
@@ -140,11 +142,11 @@ export class MenuItemComponent implements OnDestroy {
 
 menu-item.component.ts
 
-ViewContainerRef represents a container to which we can attatch a view. In our case we are going to attach the view that was passed into our menuFor input property. To do so, we use createEmbedeedView method, which does the actual insertion of a view into our container.
+ViewContainerRef represents a container to which we can attatch a view. In our case we are going to attach the view that was passed into our menuFor input property. To do so, we use createEmbedeedView method existing on ViewContainerRef, which does the actual insertion of a view into our container.
 
 ## See it Working
 
-At that moment we should be able to see nested menu after clicking on a parent element. So lets add MenuModule to imports array in AppModule, and also add menu html with some sub items inside to AppComponent.
+At that moment we should be able to see a nested menu after clicking on a parent element. But before that we have to set up a playground for that. Lets add MenuModule to imports array in AppModule, and also add menu html with some sub items inside to AppComponent template.
 
 ```
 @NgModule({
@@ -196,11 +198,11 @@ app.module.ts
 
 app.component.html
 
-If you run our app and checked how it works, you definitely have spotted some problems (not full list yet).
+If you have run the app and checked how it works, you must have spotted some problems (not full list).
 
 1. the first menu container should be displayed below 'Click Me' button,
 2. its impossible to close menu on clicking menu item button,
-3. clicking outside the menu should close it too, but it is not, yet.
+3. clicking outside the menu should close it too, but it is not.
 
 ## Fix positioning of Menu Container
 
@@ -225,7 +227,7 @@ Lets tackle the first problem. Menu Item element needs to know if its the very r
 
 menu-item.component.css
 
-Once we have them we need to add a getter function, which is going to return either of them depending if its a root or not:
+Once we have them we need to add a getter function, which is going to return either of them depending on its position in menu tree:
 
 ```
     public get containerCssClass(): string {
@@ -241,7 +243,7 @@ Once we have them we need to add a getter function, which is going to return eit
 
 menu-item.component.ts
 
-and one last thing is to alter menu item html a bit, so that it accepted dynamically assigned css class. After a change it should look like this:
+One last thing is to alter menu item html a bit, so that it accepted dynamically assigned css class. After a change it should look like this:
 
 ```
 <button (click)="onClick()" [ngClass]="containerCssClass" class="button__container">
@@ -255,7 +257,7 @@ menu-item.component.html
 
 ## Opening and Closing on menu item click
 
-Problem number one, checked. Now lets concentrate on another one. We click 'Click Me' button, menu is displayed, clicking on it again should close it. But it does not. To solve that let's check if the placeholder for our container is already taken up by another menu. If so it means we need to clear the container. Let's alter the 'onClick' handler and add two private methods.
+Problem number one, checked. Now lets concentrate on another. We click 'Click Me' button, menu is displayed, clicking on it again should close it. But it does not. To solve that let's check if the placeholder for our container is already taken up by another menu. If so it means we need to clear the container. Let's alter the 'onClick' handler and add two private methods.
 
 ```
     public onClick(): void {
@@ -371,7 +373,7 @@ export class MenuModule {}
 
 menu.module.ts
 
-Now lets make use of our tokens and inject them in MenuItemComponent. Its constructor should be extended with two items, windowRef and documentRef. With the use of those object we are going to detect if click happened outside of the menu. We will attatch click lisneter to the root element of our menu (as all sub menus are added as its children). Once this is done, we will remove the listener. Lets add then another method
+Now lets make use of our tokens and inject them in MenuItemComponent. Its constructor should be extended with two items, windowRef and documentRef. With the use of those object we are going to detect if click happened outside of the menu. We will attatch click lisneter to the root element of our menu (as all sub menus are added as its children). Once menu is closed we will remove the listener. Lets add some more code to our menu item.
 
 ```
     private boundClickOutsideHandler: (event: any) => void;
@@ -394,7 +396,7 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
             this.addTemplateToContainer(this.menuFor);
         } else {
             // and remove it in case we want to close the menu
-            this.removeClickOutsideListener();
+            this.removeClickOutsideListener(this.boundClickOutsideHandler);
 
             this.clearContainer();
         }
@@ -405,7 +407,7 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
     private addHandlersForRootElement() {
         if (this.isRoot()) {
             this.assingClickOutsideHandler();
-            this.addClickOutsideListener();
+            this.addClickOutsideListener(this.boundClickOutsideHandler);
         }
     }
 
@@ -413,12 +415,12 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
         this.boundClickOutsideHandler = this.closeMenuOnOutsideClick.bind(this);
     }
 
-    private addClickOutsideListener(): void {
-        this.windowRef.addEventListener('click', this.boundClickOutsideHandler);
+    private addClickOutsideListener(functionRef: () => void): void {
+        this.windowRef.addEventListener('click', functionRef);
     }
 
-    private removeClickOutsideListener(): void {
-        this.windowRef.removeEventListener('click', this.boundClickOutsideHandler);
+    private removeClickOutsideListener(functionRef: () => void): void {
+        this.windowRef.removeEventListener('click', functionRef);
     }
 
     private closeMenuOnOutsideClick({ target }): void {
@@ -428,15 +430,17 @@ Now lets make use of our tokens and inject them in MenuItemComponent. Its constr
 
 ```
 
-If we click on the menu that is currently closed, before showing it we check if it was the root element, and if so we add click event listener. If on the other hand menu is already visible and we click it again, we need to remove click listener and only then proceed with clearing the container. You probably have noticed new private property boundClickOutsideHandler and that its passed in as a second argument of addEventListener (not just closeMenuOnOustideClick). This is done, because removeEventListener checks by reference the function that it needs to remove. doing 'closeMenuOnOustideClick.bind(this)' returns a new reference, and so does arrow function. This is why we need to assign function reference to a property.
+menu-item.component.ts
 
-With handlers attatched we can work on closing the menu on outside click. We are going to use querySelector to get the root menu. If click target was ouside of it, we remove click handler and broadcast menu clear. BroadcastMenuClear is a method that we need to define.
+If we click on the menu which submenu is currently closed, before showing it we check if it was the root element, and if so we add click event listener. If on the other hand menu is already visible and we click it again, we need to remove click listener and only then proceed with clearing the container. You probably have noticed new private property boundClickOutsideHandler and that its passed in as a second argument of addEventListener (not just closeMenuOnOustideClick). This is done, because removeEventListener checks by reference the function that it needs to remove. Doing 'closeMenuOnOustideClick.bind(this)' returns a new reference, and so does an arrow function. This is why we need to assign function reference to a property.
+
+With handlers attatched we can work on closing the menu on outside click. We are going to use querySelector to get the root menu. If clicked target was ouside of it, we remove click handler and broadcast menu clear. BroadcastMenuClear is a method that we need to define.
 
 ```
     private closeMenuOnOutsideClick({ target }): void {
         const appMenuItem = this.documentRef.querySelector('app-menu-item > app-menu');
         if (appMenuItem && !appMenuItem.parentElement.contains(target)) {
-            this.removeClickOutsideListener();
+            this.removeClickOutsideListener(this.boundClickOutsideHandler);
             this.broadcastMenuClear();
         }
     }
@@ -469,7 +473,7 @@ export class MenuStateService {
 }
 ```
 
-Once we have a service, we need to use it in MenuItemComponent. Lets go to broadcastMenuClear method, and call clear menu from menu state service. We are now dispatching next on the observable, but no one is listening to the messages. Lets add a method that will subscribe to the messages. We will call it
+Once we have a service, we need to use it in MenuItemComponent. Lets go to broadcastMenuClear method, and call clear menu from menu state service. We are now dispatching next on the observable, but no one is listening to the messages. Lets add a method that will subscribe to the messages. We will call it subscribeToClearMenuMessages, and add it to addHandlersForRootElement.
 
 ```
     constructor(
@@ -487,7 +491,7 @@ Once we have a service, we need to use it in MenuItemComponent. Lets go to broad
             // we subscribe to menu state changes in here
             this.subscribeToClearMenuMessages();
             this.assingClickOutsideHandler();
-            this.addClickOutsideListener();
+            this.addClickOutsideListener(this.boundClickOutsideHandler)
         }
     }
 
@@ -520,7 +524,7 @@ Our menu is almost working, now we have to handle its leaves. If a leaf has been
             this.registerOpenedMenu();
             this.addTemplateToContainer(this.menuFor);
         } else {
-            this.removeClickOutsideListener();
+            this.removeClickOutsideListener(this.boundClickOutsideHandler);
             this.clearContainer();
         }
     }
@@ -533,6 +537,39 @@ Our menu is almost working, now we have to handle its leaves. If a leaf has been
 
     private hasNestedSubMenu(): boolean {
         return !!this.menuFor;
+    }
+```
+
+One last thing is cleaning up. Lets add ngOnDestroy to MenuItemComponent and remove click outside listener.
+
+```
+export class MenuItemComponent implements OnDestroy {
+
+    ...
+
+    // new private property
+    private menuStateSubscription: Subscription;
+    ...
+
+    public ngOnDestroy(): void {
+        this.removeClickOutsideListener(this.boundClickOutsideHandler);
+        this.unsubscribe();
+    }
+
+    ...
+
+    // updated subscribeToClearMenuMessages method
+    private subscribeToClearMenuMessages(): void {
+        this.menuStateSubscription = this.menuStateService.state$.subscribe(() => {
+            this.clearContainer();
+        });
+    }
+
+    // added unsubscribe method
+    private unsubscribe(): void {
+        if (this.menuStateSubscription) {
+            this.menuStateSubscription.unsubscribe();
+        }
     }
 ```
 
