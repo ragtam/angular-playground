@@ -29,11 +29,6 @@ export class MenuItemComponent implements OnDestroy {
         private menuStateService: MenuStateService
     ) {}
 
-    public ngOnDestroy(): void {
-        this.removeClickOutsideListener(this.boundClickOutsideHandler);
-        this.unsubscribe();
-    }
-
     public onClick(): void {
         if (this.isLeaf()) {
             this.broadcastMenuClear();
@@ -50,6 +45,11 @@ export class MenuItemComponent implements OnDestroy {
 
     public clearContainer(): void {
         this.viewContainerRef.clear();
+    }
+
+    public ngOnDestroy(): void {
+        this.removeClickOutsideListener(this.boundClickOutsideHandler);
+        this.unsubscribe();
     }
 
     private assingClickOutsideHandler(): void {
