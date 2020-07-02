@@ -77,7 +77,7 @@ export class MenuComponent {
 
 menu.component.ts
 
-Now we have to project the content of our container. I can be done using <ng-content> tag. Angular replaces this tag with the content that we place between our host component tags. If we put <app-menu>Hello World<app-menu>, it will simply display 'Hello World' in our host component.
+Now we have to project the content of our container. It can be done using <ng-content> tag. Angular replaces this tag with the content that we place between our host component tags. If we put <app-menu>Hello World<app-menu>, it will simply display 'Hello World' in our host component.
 
 ```
 <div class="menu">
@@ -202,11 +202,11 @@ If you have run the app and checked how it works, you must have spotted some pro
 
 1. the first menu container should be displayed below 'Click Me' button,
 2. its impossible to close menu on clicking menu item button,
-3. clicking outside the menu should close it too, but it is not.
+3. clicking outside the menu should close it too, but it doesn't.
 
 ## Fix positioning of Menu Container
 
-Lets tackle the first problem. Menu Item element needs to know if its the very root of the menu tree, or if its a leaf. Depending on its position in the tree we are going to apply different CSS style to it. To find it out we need to inject optional dependency to our MenuItemComponent, which is going to be a parent component. If there is no parent component of type MenuComponent, it means the MenuItem is the root, otherwise its the leaf. Lest add two css classes for the parent and the child:
+Lets tackle the first problem. Menu Item element needs to know if it's the very root of the menu tree, or if it's a leaf. Depending on its position in the tree we are going to apply different CSS style to it. To find it out we need to inject optional dependency to our MenuItemComponent, which is going to be a parent component. If there is no parent component of type MenuComponent, it means the MenuItem is the root, otherwise it's the leaf. Lest add two css classes for the parent and the child:
 
 ```
 .button__container {
@@ -373,7 +373,7 @@ export class MenuModule {}
 
 menu.module.ts
 
-Now lets make use of our tokens and inject them in MenuItemComponent. Its constructor should be extended with two items, windowRef and documentRef. With the use of those object we are going to detect if click happened outside of the menu. We will attatch click lisneter to the root element of our menu (as all sub menus are added as its children). Once menu is closed we will remove the listener. Lets add some more code to our menu item.
+Now lets make use of our tokens and inject them in MenuItemComponent. Its constructor should be extended with two items, windowRef and documentRef. With the use of those objects we are going to detect if click happened outside of the menu. We will attach click listener to the root element of our menu (as all sub menus are added as its children). Once menu is closed we will remove the listener. Lets add some more code to our menu item.
 
 ```
     private boundClickOutsideHandler: (event: any) => void;
@@ -434,7 +434,7 @@ menu-item.component.ts
 
 If we click on the menu which submenu is currently closed, before showing it we check if it was the root element, and if so we add click event listener. If on the other hand menu is already visible and we click it again, we need to remove click listener and only then proceed with clearing the container. You probably have noticed new private property boundClickOutsideHandler and that its passed in as a second argument of addEventListener (not just closeMenuOnOustideClick). This is done, because removeEventListener checks by reference the function that it needs to remove. Doing 'closeMenuOnOustideClick.bind(this)' returns a new reference, and so does an arrow function. This is why we need to assign function reference to a property.
 
-With handlers attatched we can work on closing the menu on outside click. We are going to use querySelector to get the root menu. If clicked target was ouside of it, we remove click handler and broadcast menu clear. BroadcastMenuClear is a method that we need to define.
+With handlers attatched we can work on closing the menu on outside click. We are going to use querySelector to get the root menu. If clicked target was outside of it, we remove click handler and broadcast menu clear. BroadcastMenuClear is a method that we need to define.
 
 ```
     private closeMenuOnOutsideClick({ target }): void {
@@ -575,7 +575,7 @@ export class MenuItemComponent implements OnDestroy {
 
 ## Conclusion
 
-In this article we learned how buid a context menu with the API similar to the one Angular Material uses. We applied several techniques used during Angular application creation, like content projection, created views from templates dynamically, accessed parent of a child component and applied styles dynamically.
+In this article we learnt how to build a context menu with the API similar to the one Angular Material uses. We applied several techniques used during Angular application creation, like content projection, created views from templates dynamically, accessed parent of a child component and applied styles dynamically.
 
 ## Resources
 
